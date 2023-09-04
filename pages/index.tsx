@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
-import styles from '@/styles/Home.module.css'  // Make sure you import your stylesheet
+import styles from '@/styles/Home.module.css'
 
 export default function Home() {
   return (
@@ -15,10 +15,21 @@ export default function Home() {
           <Image 
             src="/logo.png" 
             alt="Levely Logo"
-            width={250}  // Increased the width
-            height={250} // Increased the height
+            width={250}  
+            height={250}
           />
-          <h4 className="mt-3 mb-4">Welcome to Levely</h4> {/* Use h4 to make text smaller */}
+          <h4 className="mt-3 mb-4">Welcome to Levely</h4>
+          
+          {/* New Image with 40% smaller dimensions and padding */}
+          <div className="mb-4" style={{padding: '5px'}}>
+            <Image 
+              src="/gallery/portrait.jpg" 
+              alt="New Image"
+              width={234}  // 40% smaller than 390
+              height={155}  // 40% smaller than 258
+            />
+          </div>
+          
           <p className="mb-4">
             Levely helps you get your next job. We offer resume assistance, smart analysis, a referral network, and personalized learning recommendations.
           </p>
