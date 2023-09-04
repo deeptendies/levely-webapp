@@ -12,27 +12,28 @@ export default function Home() {
       </Head>
       <main className={`d-flex justify-content-center align-items-center vh-100 ${styles.unselectable}`}>
         <div className="text-center">
-          <Image 
-            src="/logo.png" 
+          <Image
+            src="/logo.png"
             alt="Levely Logo"
-            width={250}  
+            width={250}
             height={250}
           />
           <h4 className="mt-3 mb-4">Welcome to Levely</h4>
-          
+
           {/* New Image with 40% smaller dimensions and padding */}
-          <div className="mb-4" style={{padding: '5px'}}>
-            <Image 
-              src="/gallery/portrait.jpg" 
+          <div className="mb-4" style={{ padding: '5px' }}>
+            <Image
+              src="/gallery/portrait.jpg"
               alt="New Image"
               width={234}  // 40% smaller than 390
               height={155}  // 40% smaller than 258
             />
           </div>
-          
-          <p className="mb-4">
+
+          <p className={`mb-4 ${styles.fadeIn}`}>
             Levely helps you get your next job. We offer resume assistance, smart analysis, a referral network, and personalized learning recommendations.
           </p>
+
           <div className="d-flex justify-content-center">
             <Link href="/signup">
               <button className="btn btn-primary me-2">Sign Up</button>
