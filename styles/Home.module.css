@@ -276,3 +276,23 @@
     transform: rotate(0deg);
   }
 }
+
+.buttonGroup {
+  display: flex;
+  gap: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+}
+
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
