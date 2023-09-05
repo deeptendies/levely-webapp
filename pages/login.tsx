@@ -1,8 +1,42 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '@/styles/Home.module.css'
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '@/styles/Home.module.css';
+import { useEffect, useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../utils/firebase';
+import Cookies from 'js-cookie';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const token = Cookies.get('auth');
+    if (token) {
+      // Logic to automatically log the user in with the token
+    }
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        Cookies.set('auth', userCredential.user.refreshToken);
+        setMessage('Logged in successfully.');
+        // Redirect to homepage or dashboard
+      }
+    } catch (error) {
+  if (error instanceof Error) {
+    setMessage('Error logging in: ' + error.message);
+  } else {
+    setMessage('An unknown error occurred.');
+  }
+}
+  };
+  
+
   return (
     <>
       <Head>
@@ -13,17 +47,30 @@ export default function Login() {
           <Image 
             src="/logo.png" 
             alt="Levely Logo"
-            width={250}
-            height={250}
+            width={150}
+            height={150}
           />
           <h4 className="mt-3 mb-4">Login to Levely</h4>
-          <form>
-            <input type="email" placeholder="Email" className="form-control mb-2" />
-            <input type="password" placeholder="Password" className="form-control mb-2" />
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              className="form-control mb-2"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="form-control mb-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <button type="submit" className="btn btn-primary">Login</button>
           </form>
+          {message && <div className="mt-3">{message}</div>}
         </div>
       </main>
     </>
-  )
+  );
 }

@@ -56,8 +56,8 @@ export default function Signup() {
           <Image
             src="/logo.png"
             alt="Levely Logo"
-            width={250}
-            height={250}
+            width={150}
+            height={150}
           />
           <h4 className="mt-3 mb-4">Sign Up for Levely</h4>
           <form onSubmit={handleSignup}>
