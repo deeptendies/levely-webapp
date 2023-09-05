@@ -15,10 +15,9 @@ export default function Home() {
           <Image
             src="/logo.png"
             alt="Levely Logo"
-            width={250}
-            height={250}
+            width={150}
+            height={150}
           />
-          <h4 className="mt-3 mb-4">Welcome to Levely</h4>
 
           {/* New Image with 40% smaller dimensions and padding */}
           <div className="mb-4" style={{ padding: '5px' }}>
@@ -29,7 +28,7 @@ export default function Home() {
               height={155}  // 40% smaller than 258
             />
           </div>
-
+          <h5 className="mt-3 mb-4">Welcome to Levely</h5>
           <p className={`mb-4 ${styles.fadeIn}`}>
             Levely helps you get your next job. We offer resume assistance, smart analysis, a referral network, and personalized learning recommendations.
           </p>
