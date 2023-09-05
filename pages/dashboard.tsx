@@ -1,0 +1,39 @@
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+import Image from 'next/image'; // Import Image from Next.js
+import styles from '@/styles/Home.module.css'; // Import the styles
+
+export default function Dashboard() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get('auth');
+    if (!token) {
+      router.push('/');
+    }
+  }, []);
+
+  const handleLogout = () => {
+    Cookies.remove('auth');
+    router.push('/');
+  };
+
+  return (
+    <>
+      <main className={`d-flex justify-content-center align-items-center vh-100 ${styles.unselectable}`}>
+        <div className="text-center">
+          <Image
+            src="/logo.png"
+            alt="Levely Logo"
+            width={150}
+            height={150}
+          />
+          <h1>Your Account</h1>
+          <p>Welcome to your dashboard!</p>
+          <button className="btn btn-primary" onClick={handleLogout}>Log Out</button>
+        </div>
+      </main>
+    </>
+  );
+}

@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 import Cookies from 'js-cookie';
@@ -10,10 +11,12 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const token = Cookies.get('auth');
     if (token) {
+      router.push('/dashboard');
       // Logic to automatically log the user in with the token
     }
   }, []);
@@ -25,15 +28,19 @@ export default function Login() {
       if (userCredential.user) {
         Cookies.set('auth', userCredential.user.refreshToken);
         setMessage('Logged in successfully.');
-        // Redirect to homepage or dashboard
+  
+        // Add this line to wait for 2 seconds and then navigate
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 500);
       }
     } catch (error) {
-  if (error instanceof Error) {
-    setMessage('Error logging in: ' + error.message);
-  } else {
-    setMessage('An unknown error occurred.');
-  }
-}
+      if (error instanceof Error) {
+        setMessage('Error logging in: ' + error.message);
+      } else {
+        setMessage('An unknown error occurred.');
+      }
+    }
   };
   
 
