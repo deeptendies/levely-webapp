@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../utils/firebase';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Cookies from 'js-cookie';
 
 export default function Login() {
@@ -44,6 +45,24 @@ export default function Login() {
   };
   
 
+  const handleResetPassword = async () => {
+    if (email) {
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setMessage("An reset email has been sent to " + email);
+      } catch (error) {
+        if (error instanceof Error) {
+          setMessage('Error resetting password: ' + error.message);
+        } else {
+          setMessage('An unknown error occurred.');
+        }
+      }
+    } else {
+      setMessage("Please enter your email first");
+    }
+  };
+  
+
   return (
     <>
       <Head>
@@ -74,6 +93,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <button type="submit" className="btn btn-primary">Login</button>
+            <button type="button" className="btn btn-link" onClick={handleResetPassword}>Reset Password</button>
           </form>
           {message && <div className="mt-3">{message}</div>}
         </div>
