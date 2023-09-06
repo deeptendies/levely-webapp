@@ -41,8 +41,8 @@ export default function Dashboard() {
                     <h1>Your Account</h1>
                     <p>Welcome to your dashboard!</p>
                     <div className="btn-group-vertical">
-                        <button className="btn btn-secondary mb-2" onClick={goToUploadResume}>Upload Resume</button>
-                        <button className="btn btn-secondary mb-2" onClick={goToJobsWorkbench}>Jobs Workbench</button>
+                        <button className="btn btn-light text-dark mb-2" onClick={goToUploadResume}>Upload Resume</button>
+                        <button className="btn btn-light text-dark mb-2" onClick={goToJobsWorkbench}>Jobs Workbench</button>
                         <button className="btn btn-primary" onClick={handleLogout}>Log Out</button>
                     </div>
                 </div>

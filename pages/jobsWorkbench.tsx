@@ -77,7 +77,7 @@ export default function JobsWorkbench() {
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1>Jobs Workbench</h1>
                 <span>Logged in as {user ? user.email : "Loading..."}</span>
-                <button className="btn btn-info ml-3" onClick={handleReturn}>Return</button>
+                <button className="btn btn-light text-dark ml-3" onClick={handleReturn}>Return</button>
             </div>
             <p>Manage your job descriptions and analyses here.</p>
 
@@ -85,7 +85,7 @@ export default function JobsWorkbench() {
                 <div className="col-4">
                     <h3>Job List</h3>
                     <p>Click to select a job for editing.</p>
-                    <button className="btn btn-secondary mb-3" onClick={handleAddNew}>Add New</button>
+                    <button className="btn btn-light text-dark mb-3" onClick={handleAddNew}>Add New</button>
                     <ul className="list-group">
                         {jobList.map((job, index) => (
                             <li
@@ -125,9 +125,10 @@ export default function JobsWorkbench() {
                                 placeholder="Job Analysis"
                                 rows={5}
                             />
+                            <hr />
                             <div className="mb-2">
                                 <button className="btn btn-primary" style={{ marginRight: '8px' }}>Rewrite Resume</button>
-                                <button className="btn btn-warning">Copy</button>
+                                <button className="btn btn-light text-dark">Copy</button>
                             </div>
                             <textarea
                                 className="form-control mb-2"
@@ -135,8 +136,8 @@ export default function JobsWorkbench() {
                                 rows={5}
                             />
                             <div className="mt-2">
-                                <button className="btn btn-success" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
-                                <button className="btn btn-danger" onClick={handleRemove}>Delete</button>
+                                <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
+                                <button className="btn btn-light text-dark" onClick={handleRemove}>Delete</button>
                             </div>
                         </div>
                     )}

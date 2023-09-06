@@ -38,7 +38,7 @@ export default function Home() {
               <button className="btn btn-primary me-2">Sign Up</button>
             </Link>
             <Link href="/login">
-              <button className="btn btn-secondary">Login</button>
+              <button className="btn btn-light text-dark">Login</button>
             </Link>
           </div>
         </div>

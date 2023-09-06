@@ -61,7 +61,7 @@ export default function UploadResume() {
           </div>
           <div>
             <button className="btn btn-primary" style={{ marginRight: '10px' }} onClick={uploadResume}>Upload</button>
-            <button className="btn btn-secondary" style={{ marginLeft: '10px' }} onClick={returnToDashboard}>Return</button>
+            <button className="btn btn-light text-dark" style={{ marginLeft: '10px' }} onClick={returnToDashboard}>Return</button>
           </div>
           {message && <div className="mt-3">{message}</div>}
         </div>
