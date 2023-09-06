@@ -4,6 +4,8 @@ import { db } from '../utils/firebase';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth } from '../utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { functions } from '../utils/firebase';
+import { httpsCallable } from "firebase/functions";
 
 
 interface JobData {
@@ -22,6 +24,15 @@ export default function JobsWorkbench() {
     const [jobName, setJobName] = useState("");
     const [jobDescription, setJobDescription] = useState("");
     const router = useRouter();
+    const [jobAnalysis, setJobAnalysis] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const getIdToken = async () => {
+        if (auth.currentUser) {
+            return await auth.currentUser.getIdToken();
+        }
+        return null;
+    };
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, 'jobs'), (snapshot) => {
@@ -72,6 +83,26 @@ export default function JobsWorkbench() {
         setShowForm(true);
     };
 
+
+    const handleAnalyze = async () => {
+        const idToken = await getIdToken(); // Moved inside async function
+        if (!idToken) return; // Check for null
+
+        setIsLoading(true);
+        try {
+            const getOpenAIResponse = httpsCallable(functions, 'getOpenAIResponse'); // Removed headers
+            const response = await getOpenAIResponse({ system: "Your system input", user: jobDescription });
+
+            const responseData = response.data as { choices: [{ text: string }] };
+            setJobAnalysis(responseData.choices[0].text);
+        } catch (error) {
+            console.error("Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+
     return (
         <div className="container">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -119,11 +150,14 @@ export default function JobsWorkbench() {
                                 onChange={(e) => setJobDescription(e.target.value)}
                             />
                             <hr />
-                            <button className="btn btn-primary mb-2">Analyze</button>
+                            <button className="btn btn-primary mb-2" onClick={handleAnalyze}>Analyze</button>
+                            {isLoading && <span>Loading...</span>}
                             <textarea
                                 className="form-control mb-2"
                                 placeholder="Job Analysis"
                                 rows={5}
+                                value={jobAnalysis}
+                                readOnly  // If you want it to be read-only
                             />
                             <hr />
                             <div className="mb-2">
