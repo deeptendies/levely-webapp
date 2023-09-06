@@ -19,6 +19,10 @@ export default function Dashboard() {
     router.push('/');
   };
 
+  const goToUploadResume = () => {
+    router.push('/uploadResume');  // Assuming the UploadResume page is at this route
+  };
+
   return (
     <>
       <main className={`d-flex justify-content-center align-items-center vh-100 ${styles.unselectable}`}>
@@ -31,7 +35,10 @@ export default function Dashboard() {
           />
           <h1>Your Account</h1>
           <p>Welcome to your dashboard!</p>
-          <button className="btn btn-primary" onClick={handleLogout}>Log Out</button>
+          <div className="btn-group-vertical">
+            <button className="btn btn-secondary mb-2" onClick={goToUploadResume}>Upload Resume</button>
+            <button className="btn btn-primary" onClick={handleLogout}>Log Out</button>
+          </div>
         </div>
       </main>
     </>
