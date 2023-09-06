@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../utils/firebase';
 import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { auth } from '../utils/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+
 
 interface JobData {
     id: string;
@@ -12,6 +15,7 @@ interface JobData {
 }
 
 export default function JobsWorkbench() {
+    const [user] = useAuthState(auth);
     const [jobList, setJobList] = useState<JobData[]>([]);
     const [selectedJob, setSelectedJob] = useState<JobData | null>(null);
     const [showForm, setShowForm] = useState(false);
@@ -47,6 +51,8 @@ export default function JobsWorkbench() {
     const handleRemove = async () => {
         if (selectedJob) {
             await deleteDoc(doc(db, 'jobs', selectedJob.id));
+            setSelectedJob(null); // Add this line
+            setShowForm(false); // Hide the form
         }
     };
 
@@ -68,53 +74,75 @@ export default function JobsWorkbench() {
 
     return (
         <div className="container">
-          <h1>Jobs Workbench</h1>
-          <button className="btn btn-info mb-3" onClick={() => router.push('/dashboard')}>Return</button>
-          <p>Manage your job descriptions here.</p>
-          
-          <div className="row">
-            <div className="col-4">
-              <div className="d-flex justify-content-between mb-3">
-                <button className="btn btn-secondary" onClick={handleAddNew}>Add New</button>
-                <button className="btn btn-danger" onClick={handleRemove}>Remove</button>
-              </div>
-              <ul className="list-group">
-                {jobList.map((job) => (
-                  <li key={job.id} className="list-group-item" onClick={() => handleEdit(job)}>
-                    {job.name}
-                  </li>
-                ))}
-              </ul>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h1>Jobs Workbench</h1>
+                <span>Logged in as {user ? user.email : "Loading..."}</span>
+                <button className="btn btn-info ml-3" onClick={handleReturn}>Return</button>
             </div>
-    
-            <div className="col-8">
-              {showForm && (
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className="form-control mb-3"
-                    placeholder="Job Name"
-                    value={jobName}
-                    onChange={(e) => setJobName(e.target.value)}
-                  />
-                  <textarea
-                    className="form-control mb-3"
-                    placeholder="Job Description"
-                    rows={4}
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                  />
-                  <input type="text" className="form-control mb-3" placeholder="Job Analysis"/>
-                  <div className="d-flex justify-content-between mb-3">
-                    <button className="btn btn-primary">Analyze</button>
-                    <button className="btn btn-primary">Rewrite Resume</button>
-                    <button className="btn btn-warning">Copy</button>
-                    <button className="btn btn-success" onClick={handleSave}>Save</button>
-                  </div>
+            <p>Manage your job descriptions and analyses here.</p>
+
+            <div className="row">
+                <div className="col-4">
+                    <h3>Job List</h3>
+                    <p>Click to select a job for editing.</p>
+                    <button className="btn btn-secondary mb-3" onClick={handleAddNew}>Add New</button>
+                    <ul className="list-group">
+                        {jobList.map((job, index) => (
+                            <li
+                                key={job.id}
+                                className={`list-group-item ${selectedJob?.id === job.id ? "active" : ""}`}
+                                onClick={() => handleEdit(job)}
+                            >
+                                {job.name}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-              )}
+
+                <div className="col-8">
+                    <h3>Job Details</h3>
+                    <p>Edit the selected job or add a new one.</p>
+                    {showForm && (
+                        <div>
+                            <input
+                                type="text"
+                                className="form-control mb-2"
+                                placeholder="Job Name"
+                                value={jobName}
+                                onChange={(e) => setJobName(e.target.value)}
+                            />
+                            <textarea
+                                className="form-control mb-2"
+                                placeholder="Job Description"
+                                rows={5}
+                                value={jobDescription}
+                                onChange={(e) => setJobDescription(e.target.value)}
+                            />
+                            <hr />
+                            <button className="btn btn-primary mb-2">Analyze</button>
+                            <textarea
+                                className="form-control mb-2"
+                                placeholder="Job Analysis"
+                                rows={5}
+                            />
+                            <div className="mb-2">
+                                <button className="btn btn-primary" style={{ marginRight: '8px' }}>Rewrite Resume</button>
+                                <button className="btn btn-warning">Copy</button>
+                            </div>
+                            <textarea
+                                className="form-control mb-2"
+                                placeholder="Rewritten Resume"
+                                rows={5}
+                            />
+                            <div className="mt-2">
+                                <button className="btn btn-success" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
+                                <button className="btn btn-danger" onClick={handleRemove}>Delete</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-          </div>
         </div>
-      );
-    }
+    );
+
+}
