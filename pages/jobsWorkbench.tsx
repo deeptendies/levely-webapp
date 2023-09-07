@@ -84,24 +84,24 @@ export default function JobsWorkbench() {
     };
 
 
+
     const handleAnalyze = async () => {
-        const idToken = await getIdToken(); // Moved inside async function
-        if (!idToken) return; // Check for null
-
-        setIsLoading(true);
         try {
-            const getOpenAIResponse = httpsCallable(functions, 'getOpenAIResponse'); // Removed headers
-            const response = await getOpenAIResponse({ system: "Your system input", user: jobDescription });
+            // Initialize the function
+            const reverseMessage = httpsCallable(functions, 'reverseMessage');
 
-            const responseData = response.data as { choices: [{ text: string }] };
-            setJobAnalysis(responseData.choices[0].text);
+            // Call the function and get the result
+            const result = await reverseMessage({ message: "Your message here" });
+            const responseData = result.data as { message: string };
+            setJobAnalysis(responseData.message);
         } catch (error) {
             console.error("Error:", error);
         } finally {
             setIsLoading(false);
         }
     };
-    
+
+
 
     return (
         <div className="container">
