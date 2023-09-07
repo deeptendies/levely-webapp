@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../utils/firebase';
-import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { auth } from '../utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { functions } from '../utils/firebase';
@@ -83,25 +83,70 @@ export default function JobsWorkbench() {
         setShowForm(true);
     };
 
+    const [resumeText, setResumeText] = useState("");
+    useEffect(() => {
+        // Existing code for fetching jobs...
+      
+        // New code for fetching resumeText
+        const fetchResume = async () => {
+          const userDoc = doc(db, "users", "userID");  // replace "userID" with the actual user ID
+          const docSnap = await getDoc(userDoc);
+      
+          if (docSnap.exists()) {
+            setResumeText(docSnap.data()?.resume || "");
+          }
+        };
+      
+        fetchResume();
+      }, []);
+      
 
     const handleAnalyze = async () => {
-        const idToken = await getIdToken(); // Moved inside async function
-        if (!idToken) return; // Check for null
-
-        setIsLoading(true);
         try {
-            const getOpenAIResponse = httpsCallable(functions, 'getOpenAIResponse'); // Removed headers
-            const response = await getOpenAIResponse({ system: "Your system input", user: jobDescription });
+            // Initialize the function
+            const callOpenAI = httpsCallable(functions, 'openAI');
+            
+            const systemPrompt = `Answer concisely. Analyze if this job posting is a good match to my resume. 
 
-            const responseData = response.data as { choices: [{ text: string }] };
-            setJobAnalysis(responseData.choices[0].text);
+            In the following format:
+            1. **Skills Required**: Check if the candidate has the technical and soft skills listed.
+            * meeting 
+            * missing
+            
+            2. **Experience**: Look for the number of years of experience required and see if the candidate meets it.
+            * meeting 
+            * missing
+            
+            3. **Education**: Does the candidate meet the educational requirements?
+            * meeting 
+            * missing
+            `
+
+            const userPrompt = `job description= """${jobDescription}"""\nresume= """${resumeText}"""`;
+
+            // Call the function and get the result
+            const result = await callOpenAI({ system: systemPrompt, user: userPrompt, max_tokens:2000 });
+
+            // Check each level for undefined
+            const data = result.data as any;
+            if (data && data.response && data.response.choices && data.response.choices.length > 0) {
+                const messageContent = data.response.choices[0].message.content;
+
+                // Set jobAnalysis to the message content
+                setJobAnalysis(messageContent);
+            } else {
+                console.error("Unexpected structure in result: ", result);
+            }
+
         } catch (error) {
             console.error("Error:", error);
         } finally {
             setIsLoading(false);
         }
     };
-    
+
+
+
 
     return (
         <div className="container">
