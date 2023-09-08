@@ -6,6 +6,8 @@ import { auth } from '../utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { functions } from '../utils/firebase';
 import { httpsCallable } from "firebase/functions";
+import firebase from 'firebase/app';
+
 
 
 interface JobData {
@@ -98,16 +100,19 @@ export default function JobsWorkbench() {
 
     const [resumeText, setResumeText] = useState("");
     useEffect(() => {
-        // New code for fetching resumeText
         const fetchResume = async () => {
-            const userDoc = doc(db, "users", "userID");  // replace "userID" with the actual user ID
-            const docSnap = await getDoc(userDoc);
-
-            if (docSnap.exists()) {
-                setResumeText(docSnap.data()?.resume || "");
+            const userId = firebase.auth().currentUser?.uid;
+            
+            if (userId) {
+                const userDoc = doc(db, "users", userId);
+                const docSnap = await getDoc(userDoc);
+    
+                if (docSnap.exists()) {
+                    setResumeText(docSnap.data()?.resume || "");
+                }
             }
         };
-
+    
         fetchResume();
     }, []);
 
