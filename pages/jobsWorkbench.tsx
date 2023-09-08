@@ -14,12 +14,12 @@ interface JobData {
     description: string;
     analysis?: string;
     rewrittenResume?: string;
-    actions?: { action: string; date: string; finished: boolean }[]; // Add this line
+    actions?: Action[];  // Using your Action interface here
 }
 
 interface Action {
     action: string;
-    notes?: string;  // Added this line for notes
+    notes?: string;  // Notes is optional
     date: string;
     finished: boolean;
 }
