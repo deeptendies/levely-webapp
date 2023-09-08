@@ -14,6 +14,12 @@ interface JobData {
     description: string;
     analysis?: string;
     rewrittenResume?: string;
+    actions?: { action: string; date: string; finished: boolean }[]; // Add this line
+}
+interface Action {
+    action: string;
+    date: string;
+    finished: boolean;
 }
 
 export default function JobsWorkbench() {
@@ -27,13 +33,6 @@ export default function JobsWorkbench() {
     const [jobAnalysis, setJobAnalysis] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [rewrittenResume, setRewrittenResume] = useState("");
-
-    const getIdToken = async () => {
-        if (auth.currentUser) {
-            return await auth.currentUser.getIdToken();
-        }
-        return null;
-    };
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, 'jobs'), (snapshot) => {
@@ -181,6 +180,28 @@ export default function JobsWorkbench() {
         }
     };
 
+    const addNewAction = () => {
+        if (selectedJob) {
+            const newActions = [...(selectedJob.actions || []), { action: '', date: new Date().toISOString().substring(0, 10), finished: false }];
+            setSelectedJob({ ...selectedJob, actions: newActions });
+        }
+    };
+
+    const removeAction = (index: number) => {
+        if (selectedJob && selectedJob.actions) {
+            const newActions = [...selectedJob.actions];
+            newActions.splice(index, 1);
+            setSelectedJob({ ...selectedJob, actions: newActions });
+        }
+    };
+
+    const updateAction = (index: number, field: keyof Action, value: string | boolean) => {
+        if (selectedJob && selectedJob.actions) {
+            const newActions: Action[] = [...selectedJob.actions];
+            (newActions[index][field] as any) = value;
+            setSelectedJob({ ...selectedJob, actions: newActions });
+        }
+    };
 
     return (
         <div className="container">
@@ -189,17 +210,20 @@ export default function JobsWorkbench() {
                     <div className="loading-icon"></div>
                 </div>
             )}
+
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h1>Jobs Workbench</h1>
+                <h2>Levely Jobs Workbench</h2>
                 <span>Logged in as {user ? user.email : "Loading..."}</span>
                 <button className="btn btn-light text-dark ml-3" onClick={handleReturn}>Return</button>
             </div>
+
             <p>Manage your job descriptions and analyses here.</p>
 
             <div className="row">
-                <div className="col-4">
-                    <h3>Job List</h3>
-                    <p>Click to select a job for editing.</p>
+                {/* Existing Columns */}
+                <div className="col-2">
+                    <h3 className="text-center">Job List</h3>
+                    {/* <p className="text-center">Click to select a job for editing.</p> */}
                     <button className="btn btn-light text-dark mb-3" onClick={handleAddNew}>Add New</button>
                     <ul className="list-group">
                         {jobList.map((job, index) => (
@@ -214,9 +238,9 @@ export default function JobsWorkbench() {
                     </ul>
                 </div>
 
-                <div className="col-8">
-                    <h3>Job Details</h3>
-                    <p>Edit the selected job or add a new one.</p>
+                <div className="col-6">
+                    <h3 className="text-center">Details</h3>
+                    <p className="text-center">Edit the selected job or add a new one.</p>
                     {showForm && (
                         <div>
                             <input
@@ -261,6 +285,40 @@ export default function JobsWorkbench() {
                         </div>
                     )}
                 </div>
+
+                {showForm && (
+                    <div className="col-4">
+                        <h5 className="text-center">Job Tracker</h5>
+                        {selectedJob ? (
+                            <table className="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Finished</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(selectedJob.actions || []).map((item, index) => (
+                                        <tr key={index}>
+                                            <td><input type="text" className="form-control" value={item.action} onChange={(e) => updateAction(index, 'action', e.target.value)} /></td>
+                                            <td><input type="date" className="form-control" value={item.date} onChange={(e) => updateAction(index, 'date', e.target.value)} /></td>
+                                            <td><input type="checkbox" className="form-check-input" checked={item.finished} onChange={(e) => updateAction(index, 'finished', e.target.checked)} /></td>
+                                            <td>
+                                                <button className="btn btn-danger" onClick={() => removeAction(index)}>-</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p>Select a job to see its actions.</p>
+                        )}
+                        <button className="btn btn-primary" onClick={addNewAction}>+</button>
+                    </div>
+                )}
+
             </div>
         </div>
     );
