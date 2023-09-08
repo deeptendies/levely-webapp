@@ -310,37 +310,62 @@ export default function JobsWorkbench() {
                     <div className="col-4">
                         <h5 className="text-center">Job Tracker</h5>
                         {selectedJob ? (
-                            <table className="table table-striped">
-                                 <tbody>
+                            <div className="table-card">
+                            <table className="table">
+                                <tbody>
                                     {(selectedJob.actions || []).map((item, index) => (
-                                        <>
+                                        <React.Fragment key={`${index}-fragment`}>
                                             <tr key={`${index}-action`}>
-                                                <td colSpan={5}><input type="text" className="form-control" placeholder="Action" value={item.action} onChange={(e) => updateAction(index, 'action', e.target.value)} /></td>
+                                                <td colSpan={5}>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Action"
+                                                        value={item.action}
+                                                        onChange={(e) => updateAction(index, 'action', e.target.value)}
+                                                    />
+                                                </td>
                                             </tr>
                                             <tr key={`${index}-notes`}>
-                                                <td colSpan={5}><textarea className="form-control" rows={2} placeholder="Notes" value={item.notes || ""} onChange={(e) => updateAction(index, 'notes', e.target.value)}></textarea></td>
-                                            </tr>
-                                            <tr key={`${index}-date`}>
                                                 <td colSpan={5}>
+                                                    <textarea
+                                                        className="form-control"
+                                                        rows={2}
+                                                        placeholder="Notes"
+                                                        value={item.notes || ""}
+                                                        onChange={(e) => updateAction(index, 'notes', e.target.value)}
+                                                    ></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr key={`${index}-date-finished`}>
+                                                <td>
+                                                    <label>Finished:&nbsp;&nbsp;</label>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input large-checkbox"
+                                                        checked={item.finished}
+                                                        onChange={(e) => updateAction(index, 'finished', e.target.checked)}
+                                                    />
+                                                </td>
+                                                <td>
                                                     <label>Date: </label>
-                                                    <input type="date" className="form-control" value={item.date} onChange={(e) => updateAction(index, 'date', e.target.value)} />
+                                                    <input
+                                                        type="date"
+                                                        className="form-control"
+                                                        value={item.date}
+                                                        onChange={(e) => updateAction(index, 'date', e.target.value)}
+                                                    />
                                                 </td>
-                                            </tr>
-                                            <tr key={`${index}-finished`}>
-                                                <td colSpan={5}>
-                                                    <label>Finished: </label>
-                                                    <input type="checkbox" className="form-check-input large-checkbox" checked={item.finished} onChange={(e) => updateAction(index, 'finished', e.target.checked)} />
-                                                </td>
-                                            </tr>
-                                            <tr key={`${index}-remove`}>
-                                                <td colSpan={5}>
+
+                                                <td>
                                                     <button className="btn btn-danger" onClick={() => removeAction(index)}>-</button>
                                                 </td>
                                             </tr>
-                                        </>
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         ) : (
                             <p>Select a job to see its actions.</p>
                         )}
