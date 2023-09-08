@@ -124,6 +124,7 @@ export default function JobsWorkbench() {
 
 
 
+
     const handleAnalyze = async () => {
         try {
             setIsLoading(true);  // Add this line to start loading
