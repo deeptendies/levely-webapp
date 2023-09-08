@@ -75,7 +75,7 @@ export default function JobsWorkbench() {
             analysis: jobAnalysis,
             rewrittenResume: rewrittenResume
         };
-    
+
         if (selectedJob) {
             await updateDoc(doc(db, 'jobs', selectedJob.id), jobData);
         } else {
@@ -88,6 +88,8 @@ export default function JobsWorkbench() {
         setSelectedJob(job);
         setJobName(job.name);
         setJobDescription(job.description);
+        setJobAnalysis(job.analysis || "");
+        setRewrittenResume(job.rewrittenResume || "");
         setShowForm(true);
     };
 
@@ -109,6 +111,7 @@ export default function JobsWorkbench() {
 
     const handleAnalyze = async () => {
         try {
+            setIsLoading(true);  // Add this line to start loading
             // Initialize the function
             const callOpenAI = httpsCallable(functions, 'openAI');
 
@@ -181,6 +184,11 @@ export default function JobsWorkbench() {
 
     return (
         <div className="container">
+            {isLoading && (
+                <div className="loading-popup">
+                    <div className="loading-icon"></div>
+                </div>
+            )}
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1>Jobs Workbench</h1>
                 <span>Logged in as {user ? user.email : "Loading..."}</span>
@@ -227,7 +235,6 @@ export default function JobsWorkbench() {
                             />
                             <hr />
                             <button className="btn btn-primary mb-2" onClick={handleAnalyze}>Analyze</button>
-                            {isLoading && <span>Loading...</span>}
                             <textarea
                                 className="form-control mb-2"
                                 placeholder="Job Analysis"
