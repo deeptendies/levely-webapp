@@ -72,7 +72,8 @@ export default function JobsWorkbench() {
             name: jobName,
             description: jobDescription,
             analysis: jobAnalysis,
-            rewrittenResume: rewrittenResume
+            rewrittenResume: rewrittenResume,
+            actions: selectedJob?.actions // Save actions to Firestore
         };
 
         if (selectedJob) {
@@ -106,6 +107,21 @@ export default function JobsWorkbench() {
 
         fetchResume();
     }, []);
+
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, 'jobs'), (snapshot) => {
+            const newJobs: JobData[] = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as JobData));
+            setJobList(newJobs);
+        });
+
+        return () => {
+            unsub();
+        };
+    }, []);
+
 
 
     const handleAnalyze = async () => {
