@@ -26,6 +26,7 @@ export default function JobsWorkbench() {
     const router = useRouter();
     const [jobAnalysis, setJobAnalysis] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [rewrittenResume, setRewrittenResume] = useState("");
 
     const getIdToken = async () => {
         if (auth.currentUser) {
@@ -86,26 +87,26 @@ export default function JobsWorkbench() {
     const [resumeText, setResumeText] = useState("");
     useEffect(() => {
         // Existing code for fetching jobs...
-      
+
         // New code for fetching resumeText
         const fetchResume = async () => {
-          const userDoc = doc(db, "users", "userID");  // replace "userID" with the actual user ID
-          const docSnap = await getDoc(userDoc);
-      
-          if (docSnap.exists()) {
-            setResumeText(docSnap.data()?.resume || "");
-          }
+            const userDoc = doc(db, "users", "userID");  // replace "userID" with the actual user ID
+            const docSnap = await getDoc(userDoc);
+
+            if (docSnap.exists()) {
+                setResumeText(docSnap.data()?.resume || "");
+            }
         };
-      
+
         fetchResume();
-      }, []);
-      
+    }, []);
+
 
     const handleAnalyze = async () => {
         try {
             // Initialize the function
             const callOpenAI = httpsCallable(functions, 'openAI');
-            
+
             const systemPrompt = `Answer concisely. Analyze if this job posting is a good match to my resume. 
 
             In the following format:
@@ -125,7 +126,7 @@ export default function JobsWorkbench() {
             const userPrompt = `job description= """${jobDescription}"""\nresume= """${resumeText}"""`;
 
             // Call the function and get the result
-            const result = await callOpenAI({ system: systemPrompt, user: userPrompt, max_tokens:2000 });
+            const result = await callOpenAI({ system: systemPrompt, user: userPrompt, max_tokens: 2000 });
 
             // Check each level for undefined
             const data = result.data as any;
@@ -146,6 +147,31 @@ export default function JobsWorkbench() {
     };
 
 
+    const handleRewriteResume = async () => {
+        try {
+            setIsLoading(true);
+            const callOpenAI = httpsCallable(functions, 'openAI');
+
+            const systemPrompt = "Rewrite the resume in a more professional way.";  // Add your prompt here
+            const userPrompt = `resume= """${resumeText}"""`;
+
+            const result = await callOpenAI({ system: systemPrompt, user: userPrompt, max_tokens: 2000 });
+
+            const data = result.data as any;
+            if (data && data.response && data.response.choices && data.response.choices.length > 0) {
+                const messageContent = data.response.choices[0].message.content;
+
+                // Set rewrittenResume to the message content
+                setRewrittenResume(messageContent);
+            } else {
+                console.error("Unexpected structure in result: ", result);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
 
     return (
@@ -206,13 +232,15 @@ export default function JobsWorkbench() {
                             />
                             <hr />
                             <div className="mb-2">
-                                <button className="btn btn-primary" style={{ marginRight: '8px' }}>Rewrite Resume</button>
+                                <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleRewriteResume}>Rewrite Resume</button>
                                 <button className="btn btn-light text-dark">Copy</button>
                             </div>
                             <textarea
                                 className="form-control mb-2"
                                 placeholder="Rewritten Resume"
                                 rows={5}
+                                value={rewrittenResume}
+                                readOnly
                             />
                             <div className="mt-2">
                                 <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
