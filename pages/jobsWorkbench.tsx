@@ -16,8 +16,10 @@ interface JobData {
     rewrittenResume?: string;
     actions?: { action: string; date: string; finished: boolean }[]; // Add this line
 }
+
 interface Action {
     action: string;
+    notes?: string;  // Added this line for notes
     date: string;
     finished: boolean;
 }
@@ -73,9 +75,9 @@ export default function JobsWorkbench() {
             description: jobDescription,
             analysis: jobAnalysis,
             rewrittenResume: rewrittenResume,
-            actions: selectedJob?.actions // Save actions to Firestore
+            ...(selectedJob?.actions ? { actions: selectedJob.actions } : {})
         };
-
+    
         if (selectedJob) {
             await updateDoc(doc(db, 'jobs', selectedJob.id), jobData);
         } else {
@@ -83,6 +85,7 @@ export default function JobsWorkbench() {
         }
         setShowForm(false);
     };
+    
 
     const handleEdit = (job: JobData) => {
         setSelectedJob(job);
@@ -221,6 +224,7 @@ export default function JobsWorkbench() {
     };
 
     return (
+
         <div className="container">
             {isLoading && (
                 <div className="loading-popup">
@@ -307,28 +311,62 @@ export default function JobsWorkbench() {
                     <div className="col-4">
                         <h5 className="text-center">Job Tracker</h5>
                         {selectedJob ? (
-                            <table className="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Finished</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
+                            <div className="table-card">
+                            <table className="table">
                                 <tbody>
                                     {(selectedJob.actions || []).map((item, index) => (
-                                        <tr key={index}>
-                                            <td><input type="text" className="form-control" value={item.action} onChange={(e) => updateAction(index, 'action', e.target.value)} /></td>
-                                            <td><input type="date" className="form-control" value={item.date} onChange={(e) => updateAction(index, 'date', e.target.value)} /></td>
-                                            <td><input type="checkbox" className="form-check-input" checked={item.finished} onChange={(e) => updateAction(index, 'finished', e.target.checked)} /></td>
-                                            <td>
-                                                <button className="btn btn-danger" onClick={() => removeAction(index)}>-</button>
-                                            </td>
-                                        </tr>
+                                        <React.Fragment key={`${index}-fragment`}>
+                                            <tr key={`${index}-action`}>
+                                                <td colSpan={5}>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Action"
+                                                        value={item.action}
+                                                        onChange={(e) => updateAction(index, 'action', e.target.value)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr key={`${index}-notes`}>
+                                                <td colSpan={5}>
+                                                    <textarea
+                                                        className="form-control"
+                                                        rows={2}
+                                                        placeholder="Notes"
+                                                        value={item.notes || ""}
+                                                        onChange={(e) => updateAction(index, 'notes', e.target.value)}
+                                                    ></textarea>
+                                                </td>
+                                            </tr>
+                                            <tr key={`${index}-date-finished`}>
+                                                <td>
+                                                    <label>Finished:&nbsp;&nbsp;</label>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input large-checkbox"
+                                                        checked={item.finished}
+                                                        onChange={(e) => updateAction(index, 'finished', e.target.checked)}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <label>Date: </label>
+                                                    <input
+                                                        type="date"
+                                                        className="form-control"
+                                                        value={item.date}
+                                                        onChange={(e) => updateAction(index, 'date', e.target.value)}
+                                                    />
+                                                </td>
+
+                                                <td>
+                                                    <button className="btn btn-danger" onClick={() => removeAction(index)}>-</button>
+                                                </td>
+                                            </tr>
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         ) : (
                             <p>Select a job to see its actions.</p>
                         )}
