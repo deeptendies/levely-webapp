@@ -75,9 +75,9 @@ export default function JobsWorkbench() {
             description: jobDescription,
             analysis: jobAnalysis,
             rewrittenResume: rewrittenResume,
-            actions: selectedJob?.actions // Save actions to Firestore
+            ...(selectedJob?.actions ? { actions: selectedJob.actions } : {})
         };
-
+    
         if (selectedJob) {
             await updateDoc(doc(db, 'jobs', selectedJob.id), jobData);
         } else {
@@ -85,6 +85,7 @@ export default function JobsWorkbench() {
         }
         setShowForm(false);
     };
+    
 
     const handleEdit = (job: JobData) => {
         setSelectedJob(job);
