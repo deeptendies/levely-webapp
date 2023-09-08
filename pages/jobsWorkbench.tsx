@@ -69,10 +69,17 @@ export default function JobsWorkbench() {
     };
 
     const handleSave = async () => {
+        const jobData = {
+            name: jobName,
+            description: jobDescription,
+            analysis: jobAnalysis,
+            rewrittenResume: rewrittenResume
+        };
+    
         if (selectedJob) {
-            await updateDoc(doc(db, 'jobs', selectedJob.id), { name: jobName, description: jobDescription });
+            await updateDoc(doc(db, 'jobs', selectedJob.id), jobData);
         } else {
-            await addDoc(collection(db, 'jobs'), { name: jobName, description: jobDescription });
+            await addDoc(collection(db, 'jobs'), jobData);
         }
         setShowForm(false);
     };
@@ -86,8 +93,6 @@ export default function JobsWorkbench() {
 
     const [resumeText, setResumeText] = useState("");
     useEffect(() => {
-        // Existing code for fetching jobs...
-
         // New code for fetching resumeText
         const fetchResume = async () => {
             const userDoc = doc(db, "users", "userID");  // replace "userID" with the actual user ID
