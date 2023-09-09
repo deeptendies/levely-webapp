@@ -6,7 +6,9 @@ import { auth } from '../utils/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { functions } from '../utils/firebase';
 import { httpsCallable } from "firebase/functions";
-import firebase from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 
 
@@ -101,7 +103,7 @@ export default function JobsWorkbench() {
     const [resumeText, setResumeText] = useState("");
     useEffect(() => {
         const fetchResume = async () => {
-            const userId = firebase.auth().currentUser?.uid;
+            const userId = getAuth().currentUser?.uid;
             
             if (userId) {
                 const userDoc = doc(db, "users", userId);

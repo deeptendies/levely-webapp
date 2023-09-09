@@ -29,7 +29,7 @@ export default function Login() {
       if (userCredential.user) {
         Cookies.set('auth', userCredential.user.refreshToken);
         setMessage('Logged in successfully.');
-  
+
         // Add this line to wait for 2 seconds and then navigate
         setTimeout(() => {
           router.push('/dashboard');
@@ -43,7 +43,7 @@ export default function Login() {
       }
     }
   };
-  
+
 
   const handleResetPassword = async () => {
     if (email) {
@@ -61,7 +61,12 @@ export default function Login() {
       setMessage("Please enter your email first");
     }
   };
-  
+
+
+  const goToMainPage = () => {
+    router.push('/');
+  };
+
 
   return (
     <>
@@ -70,8 +75,8 @@ export default function Login() {
       </Head>
       <main className={`d-flex justify-content-center align-items-center vh-100 ${styles.unselectable}`}>
         <div className="text-center">
-          <Image 
-            src="/logo.png" 
+          <Image
+            src="/logo.png"
             alt="Levely Logo"
             width={150}
             height={150}
@@ -92,8 +97,12 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button type="submit" className="btn btn-primary">Login</button>
-            <button type="button" className="btn btn-link" onClick={handleResetPassword}>Reset Password</button>
+            <div>
+              <button type="submit" className="btn btn-primary me-2">Login</button>
+              <button type="button" className="btn btn-light" onClick={goToMainPage}>Return</button>
+            </div>
+            <button type="button" className="btn btn-link mt-2" onClick={handleResetPassword}>Reset Password</button>
+
           </form>
           {message && <div className="mt-3">{message}</div>}
         </div>

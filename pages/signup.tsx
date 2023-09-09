@@ -4,6 +4,7 @@ import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import { auth } from '../utils/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { useRouter } from 'next/router';
 
 const isSecurePassword = (password: string) => {
   const minLength = 8;
@@ -46,6 +47,12 @@ export default function Signup() {
     }
   };
 
+  const router = useRouter();
+
+  const goToMainPage = () => {
+    router.push('/');
+  };
+
   return (
     <>
       <Head>
@@ -64,7 +71,10 @@ export default function Signup() {
             <input name="email" type="email" placeholder="Email" className="form-control mb-2" />
             <input name="password" type="password" placeholder="Password" className="form-control mb-2" />
             <input name="confirmPassword" type="password" placeholder="Confirm Password" className="form-control mb-2" />
-            <button type="submit" className="btn btn-primary">Sign Up</button>
+            <div>
+            <button type="submit" className="btn btn-primary me-2">Sign Up</button>
+            <button type="button" className="btn btn-light" onClick={goToMainPage}>Return</button>
+            </div>
           </form>
           {message && <div className="mt-3">{message}</div>}
         </div>

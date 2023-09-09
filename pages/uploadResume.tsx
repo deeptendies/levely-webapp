@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '@/styles/Home.module.css';
 import { db } from '../utils/firebase';
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 export default function UploadResume() {
   const [resumeText, setResumeText] = useState<string>('');
@@ -11,19 +12,21 @@ export default function UploadResume() {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch user's current resume from Firestore to determine if they've uploaded before
     const fetchResume = async () => {
-      const userDoc = doc(db, "users", "userID");
-      const docSnap = await getDoc(userDoc);
+        const userId = getAuth().currentUser?.uid;
+        
+        if (userId) {
+            const userDoc = doc(db, "users", userId);
+            const docSnap = await getDoc(userDoc);
 
-      if (docSnap.exists()) {
-        setHasUploadedBefore(true);
-        setResumeText(docSnap.data()?.resume || '');
-      }
+            if (docSnap.exists()) {
+                setResumeText(docSnap.data()?.resume || "");
+            }
+        }
     };
 
     fetchResume();
-  }, []);
+}, []);
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setResumeText(e.target.value);
@@ -31,7 +34,12 @@ export default function UploadResume() {
 
   const uploadResume = async () => {
     try {
-      const userDoc = doc(db, "users", "userID");
+      const userId = getAuth().currentUser?.uid; // Get current user's ID
+      if (!userId) {
+        setMessage('User not authenticated.');
+        return;
+      }
+      const userDoc = doc(db, "users", userId); // Use the actual user ID here
       await setDoc(userDoc, { resume: resumeText });
       setMessage('Resume uploaded successfully.');
       setHasUploadedBefore(true);
