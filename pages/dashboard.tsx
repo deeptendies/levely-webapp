@@ -24,7 +24,7 @@ export default function Dashboard() {
     };
 
     const goToJobsWorkbench = () => {
-        router.push('/jobsWorkbench');  // Assuming the JobsWorkbench page is at this route
+        router.push('/JobManagement');  // Assuming the JobsWorkbench page is at this route
     };
 
 
