@@ -177,23 +177,23 @@ export default function JobsWorkbench() {
                         id: doc.id,
                         ...doc.data(),
                     } as JobData;
-    
+
                     const actionSnapshot = await getDocs(collection(db, 'users', user.uid, 'jobs', doc.id, 'actions'));
                     const actions = actionSnapshot.docs.map(actionDoc => ({
                         id: actionDoc.id,
                         ...actionDoc.data(),
                     } as Action));
-    
+
                     return {
                         ...jobData,
                         actions
                     };
                 });
-    
+
                 const newJobs = await Promise.all(jobsPromises);
                 setJobList(newJobs);
             });
-    
+
             return () => {
                 unsubJobs();
             };
@@ -254,8 +254,8 @@ export default function JobsWorkbench() {
             setIsLoading(true);
             const callOpenAI = httpsCallable(functions, 'openAI');
 
-            const systemPrompt = "Rewrite the resume in a more professional way.";  // Add your prompt here
-            const userPrompt = `resume= """${resumeText}"""`;
+            const systemPrompt = "Based on the job description, rewrite the resume in a professional way. Try to make the resume more relavent to the job posting. the goal is to to bypass ATS filter.";
+            const userPrompt = `resume= """${resumeText}""" \n\n job description:"""${jobDescription}"""`;
 
             const result = await callOpenAI({ system: systemPrompt, user: userPrompt, max_tokens: 2000 });
 
@@ -294,6 +294,16 @@ export default function JobsWorkbench() {
                 [field]: value,
             });
         }
+    };
+
+    const handleCopyClick = () => {
+        navigator.clipboard.writeText(resumeText)
+            .then(() => {
+                alert('Rewritten resume copied to clipboard');
+            })
+            .catch(err => {
+                alert('Failed to copy text: ' + err);
+            });
     };
 
     return (
@@ -363,7 +373,7 @@ export default function JobsWorkbench() {
                             <hr />
                             <div className="mb-2">
                                 <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleRewriteResume}>Rewrite Resume</button>
-                                <button className="btn btn-light text-dark">Copy</button>
+                                <button className="btn btn-light text-dark" onClick={handleCopyClick}>Copy</button>
                             </div>
                             <textarea
                                 className="form-control mb-2"
@@ -381,70 +391,70 @@ export default function JobsWorkbench() {
                 </div>
 
                 {showForm && (
-    <div className="col-4">
-        <h5 className="text-center">Job Tracker</h5>
-        {selectedJob ? (
-            <div className="table-card">
-                <table className="table">
-                    <tbody>
-                        {actions.map((item, index) => (
-                            <React.Fragment key={`${item.id}-fragment`}>
-                                <tr key={`${item.id}-action`}>
-                                    <td colSpan={5}>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Action"
-                                            value={item.action}
-                                            onChange={(e) => updateAction(item.id!, 'action', e.target.value)}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr key={`${item.id}-notes`}>
-                                    <td colSpan={5}>
-                                        <textarea
-                                            className="form-control"
-                                            rows={2}
-                                            placeholder="Notes"
-                                            value={item.notes || ""}
-                                            onChange={(e) => updateAction(item.id!, 'notes', e.target.value)}
-                                        ></textarea>
-                                    </td>
-                                </tr>
-                                <tr key={`${item.id}-date-finished`}>
-                                    <td>
-                                        <label>Finished:&nbsp;&nbsp;</label>
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input large-checkbox"
-                                            checked={item.finished}
-                                            onChange={(e) => updateAction(item.id!, 'finished', e.target.checked)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <label>Date: </label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={item.date}
-                                            onChange={(e) => updateAction(item.id!, 'date', e.target.value)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-danger" onClick={() => removeAction(item.id!)}>-</button>
-                                    </td>
-                                </tr>
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        ) : (
-            <p>Select a job to see its actions.</p>
-        )}
-        <button className="btn btn-primary" onClick={addNewAction}>+</button>
-    </div>
-)}
+                    <div className="col-4">
+                        <h5 className="text-center">Job Tracker</h5>
+                        {selectedJob ? (
+                            <div className="table-card">
+                                <table className="table">
+                                    <tbody>
+                                        {actions.map((item, index) => (
+                                            <React.Fragment key={`${item.id}-fragment`}>
+                                                <tr key={`${item.id}-action`}>
+                                                    <td colSpan={5}>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Action"
+                                                            value={item.action}
+                                                            onChange={(e) => updateAction(item.id!, 'action', e.target.value)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr key={`${item.id}-notes`}>
+                                                    <td colSpan={5}>
+                                                        <textarea
+                                                            className="form-control"
+                                                            rows={2}
+                                                            placeholder="Notes"
+                                                            value={item.notes || ""}
+                                                            onChange={(e) => updateAction(item.id!, 'notes', e.target.value)}
+                                                        ></textarea>
+                                                    </td>
+                                                </tr>
+                                                <tr key={`${item.id}-date-finished`}>
+                                                    <td>
+                                                        <label>Finished:&nbsp;&nbsp;</label>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="form-check-input large-checkbox"
+                                                            checked={item.finished}
+                                                            onChange={(e) => updateAction(item.id!, 'finished', e.target.checked)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <label>Date: </label>
+                                                        <input
+                                                            type="date"
+                                                            className="form-control"
+                                                            value={item.date}
+                                                            onChange={(e) => updateAction(item.id!, 'date', e.target.value)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <button className="btn btn-danger" onClick={() => removeAction(item.id!)}>-</button>
+                                                    </td>
+                                                </tr>
+                                            </React.Fragment>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p>Select a job to see its actions.</p>
+                        )}
+                        <button className="btn btn-primary" onClick={addNewAction}>+</button>
+                    </div>
+                )}
 
             </div>
         </div>
