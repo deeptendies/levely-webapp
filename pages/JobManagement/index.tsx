@@ -12,6 +12,7 @@ import 'firebase/compat/firestore';
 
 
 
+
 interface JobData {
     id: string;
     name: string;
@@ -307,155 +308,159 @@ export default function JobsWorkbench() {
     };
 
     return (
-
         <div className="container">
-            {isLoading && (
-                <div className="loading-popup">
-                    <div className="loading-icon"></div>
-                </div>
-            )}
+            <div className="not-supported-message">
+                Caution: For proper app function, use fullscreen or landscape mode on mobile. Otherwise, your device may not be supported.            </div>
 
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>Levely Jobs Workbench</h2>
-                <span>Logged in as {user ? user.email : "Loading..."}</span>
-                <button className="btn btn-light text-dark ml-3" onClick={handleReturn}>Return</button>
-            </div>
-
-            <p>Manage your job descriptions and analyses here.</p>
-
-            <div className="row">
-                {/* Existing Columns */}
-                <div className="col-2">
-                    <h3 className="text-center">Job List</h3>
-                    {/* <p className="text-center">Click to select a job for editing.</p> */}
-                    <button className="btn btn-light text-dark mb-3" onClick={handleAddNew}>Add New</button>
-                    <ul className="list-group">
-                        {jobList.map((job, index) => (
-                            <li
-                                key={job.id}
-                                className={`list-group-item ${selectedJob?.id === job.id ? "active" : ""}`}
-                                onClick={() => handleEdit(job)}
-                            >
-                                {job.name}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="col-6">
-                    <h3 className="text-center">Details</h3>
-                    <p className="text-center">Edit the selected job or add a new one.</p>
-                    {showForm && (
-                        <div>
-                            <input
-                                type="text"
-                                className="form-control mb-2"
-                                placeholder="Job Name"
-                                value={jobName}
-                                onChange={(e) => setJobName(e.target.value)}
-                            />
-                            <textarea
-                                className="form-control mb-2"
-                                placeholder="Job Description"
-                                rows={5}
-                                value={jobDescription}
-                                onChange={(e) => setJobDescription(e.target.value)}
-                            />
-                            <hr />
-                            <button className="btn btn-primary mb-2" onClick={handleAnalyze}>Analyze</button>
-                            <textarea
-                                className="form-control mb-2"
-                                placeholder="Job Analysis"
-                                rows={5}
-                                value={jobAnalysis}
-                                readOnly  // If you want it to be read-only
-                            />
-                            <hr />
-                            <div className="mb-2">
-                                <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleRewriteResume}>Rewrite Resume</button>
-                                <button className="btn btn-light text-dark" onClick={handleCopyClick}>Copy</button>
-                            </div>
-                            <textarea
-                                className="form-control mb-2"
-                                placeholder="Rewritten Resume"
-                                rows={5}
-                                value={rewrittenResume}
-                                readOnly
-                            />
-                            <div className="mt-2">
-                                <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
-                                <button className="btn btn-light text-dark" onClick={handleRemove}>Delete</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {showForm && (
-                    <div className="col-4">
-                        <h5 className="text-center">Job Tracker</h5>
-                        {selectedJob ? (
-                            <div className="table-card">
-                                <table className="table">
-                                    <tbody>
-                                        {actions.map((item, index) => (
-                                            <React.Fragment key={`${item.id}-fragment`}>
-                                                <tr key={`${item.id}-action`}>
-                                                    <td colSpan={5}>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Action"
-                                                            value={item.action}
-                                                            onChange={(e) => updateAction(item.id!, 'action', e.target.value)}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                <tr key={`${item.id}-notes`}>
-                                                    <td colSpan={5}>
-                                                        <textarea
-                                                            className="form-control"
-                                                            rows={2}
-                                                            placeholder="Notes"
-                                                            value={item.notes || ""}
-                                                            onChange={(e) => updateAction(item.id!, 'notes', e.target.value)}
-                                                        ></textarea>
-                                                    </td>
-                                                </tr>
-                                                <tr key={`${item.id}-date-finished`}>
-                                                    <td>
-                                                        <label>Finished:&nbsp;&nbsp;</label>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="form-check-input large-checkbox"
-                                                            checked={item.finished}
-                                                            onChange={(e) => updateAction(item.id!, 'finished', e.target.checked)}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <label>Date: </label>
-                                                        <input
-                                                            type="date"
-                                                            className="form-control"
-                                                            value={item.date}
-                                                            onChange={(e) => updateAction(item.id!, 'date', e.target.value)}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <button className="btn btn-danger" onClick={() => removeAction(item.id!)}>-</button>
-                                                    </td>
-                                                </tr>
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <p>Select a job to see its actions.</p>
-                        )}
-                        <button className="btn btn-primary" onClick={addNewAction}>+</button>
+            <div className="container">
+                {isLoading && (
+                    <div className="loading-popup">
+                        <div className="loading-icon"></div>
                     </div>
                 )}
 
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Levely Jobs Workbench</h2>
+                    <span>Logged in as {user ? user.email : "Loading..."}</span>
+                    <button className="btn btn-light text-dark ml-3" onClick={handleReturn}>Return</button>
+                </div>
+
+                <p>Manage your job descriptions and analyses here.</p>
+
+                <div className="row">
+                    {/* Existing Columns */}
+                    <div className="col-2">
+                        <h3 className="text-center">Job List</h3>
+                        {/* <p className="text-center">Click to select a job for editing.</p> */}
+                        <button className="btn btn-light text-dark mb-3" onClick={handleAddNew}>Add New</button>
+                        <ul className="list-group">
+                            {jobList.map((job, index) => (
+                                <li
+                                    key={job.id}
+                                    className={`list-group-item ${selectedJob?.id === job.id ? "active" : ""}`}
+                                    onClick={() => handleEdit(job)}
+                                >
+                                    {job.name}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="col-6">
+                        <h3 className="text-center">Details</h3>
+                        <p className="text-center">Edit the selected job or add a new one.</p>
+                        {showForm && (
+                            <div>
+                                <input
+                                    type="text"
+                                    className="form-control mb-2"
+                                    placeholder="Job Name"
+                                    value={jobName}
+                                    onChange={(e) => setJobName(e.target.value)}
+                                />
+                                <textarea
+                                    className="form-control mb-2"
+                                    placeholder="Job Description"
+                                    rows={5}
+                                    value={jobDescription}
+                                    onChange={(e) => setJobDescription(e.target.value)}
+                                />
+                                <hr />
+                                <button className="btn btn-primary mb-2" onClick={handleAnalyze}>Analyze</button>
+                                <textarea
+                                    className="form-control mb-2"
+                                    placeholder="Job Analysis"
+                                    rows={5}
+                                    value={jobAnalysis}
+                                    readOnly  // If you want it to be read-only
+                                />
+                                <hr />
+                                <div className="mb-2">
+                                    <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleRewriteResume}>Rewrite Resume</button>
+                                    <button className="btn btn-light text-dark" onClick={handleCopyClick}>Copy</button>
+                                </div>
+                                <textarea
+                                    className="form-control mb-2"
+                                    placeholder="Rewritten Resume"
+                                    rows={5}
+                                    value={rewrittenResume}
+                                    readOnly
+                                />
+                                <div className="mt-2">
+                                    <button className="btn btn-primary" style={{ marginRight: '8px' }} onClick={handleSave}>Save</button>
+                                    <button className="btn btn-light text-dark" onClick={handleRemove}>Delete</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {showForm && (
+                        <div className="col-4">
+                            <h5 className="text-center">Job Tracker</h5>
+                            {selectedJob ? (
+                                <div className="table-card">
+                                    <table className="table">
+                                        <tbody>
+                                            {actions.map((item, index) => (
+                                                <React.Fragment key={`${item.id}-fragment`}>
+                                                    <tr key={`${item.id}-action`}>
+                                                        <td colSpan={5}>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Action"
+                                                                value={item.action}
+                                                                onChange={(e) => updateAction(item.id!, 'action', e.target.value)}
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                    <tr key={`${item.id}-notes`}>
+                                                        <td colSpan={5}>
+                                                            <textarea
+                                                                className="form-control"
+                                                                rows={2}
+                                                                placeholder="Notes"
+                                                                value={item.notes || ""}
+                                                                onChange={(e) => updateAction(item.id!, 'notes', e.target.value)}
+                                                            ></textarea>
+                                                        </td>
+                                                    </tr>
+                                                    <tr key={`${item.id}-date-finished`}>
+                                                        <td>
+                                                            <label>Finished:&nbsp;&nbsp;</label>
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input large-checkbox"
+                                                                checked={item.finished}
+                                                                onChange={(e) => updateAction(item.id!, 'finished', e.target.checked)}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <label>Date: </label>
+                                                            <input
+                                                                type="date"
+                                                                className="form-control"
+                                                                value={item.date}
+                                                                onChange={(e) => updateAction(item.id!, 'date', e.target.value)}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <button className="btn btn-danger" onClick={() => removeAction(item.id!)}>-</button>
+                                                        </td>
+                                                    </tr>
+                                                </React.Fragment>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <p>You can use Job Tracker once your job is saved.</p>
+                            )}
+                            <button className="btn btn-primary" onClick={addNewAction}>+</button>
+                        </div>
+                    )}
+
+                </div>
             </div>
         </div>
     );
