@@ -27,6 +27,9 @@ export default function Dashboard() {
         router.push('/JobManagement');  // Assuming the JobsWorkbench page is at this route
     };
 
+    const goToChat = () => {
+        router.push('/chat'); // Navigate to chat page
+    };
 
     return (
         <>
@@ -43,6 +46,7 @@ export default function Dashboard() {
                     <div className="btn-group-vertical">
                         <button className="btn btn-light text-dark mb-2" onClick={goToUploadResume}>Upload Resume</button>
                         <button className="btn btn-light text-dark mb-2" onClick={goToJobsWorkbench}>Jobs Workbench</button>
+                        <button className="btn btn-light text-dark mb-2" onClick={goToChat}>Chat</button> {/* New Button */}
                         <button className="btn btn-primary" onClick={handleLogout}>Log Out</button>
                     </div>
                 </div>

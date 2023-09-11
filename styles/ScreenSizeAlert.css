@@ -1,0 +1,19 @@
+.not-supported-message {
+    display: none;
+    position: fixed;  /* Fixed position */
+    top: 0;  /* Place at the top */
+    left: 0; /* Place at the left */
+    width: 100%;  /* Full width */
+    height: 100%;  /* Full height */
+    background-color: rgba(0,0,0, 0.7);  /* Black background with opacity */
+    color: white;
+    z-index: 9999;  /* On top of everything */
+    text-align: center;
+    padding-top: 10%;  /* Center content */
+}
+
+@media screen and (max-width: 1280px) {
+    .not-supported-message {
+        display: block;
+    }
+}
